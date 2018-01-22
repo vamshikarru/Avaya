@@ -1,0 +1,253 @@
+<!--The content below is only a placeholder and can be replaced.-->
+<h1>Demo</h1>
+<div style="margin-left: 20px">
+  <button class="btn-primary ion-calendar" (click)="getSchedules()"> Schedules </button>
+</div>
+<br>
+<div class="col-md-12">
+  <strong>Current Schedules:</strong>
+  <span *ngIf="schedulesData == ''">Currently there are empty schedules</span>
+<table *ngIf="schedulesData !== ''">
+  <thead>
+  <tr>
+    <th class="col-md-4">Start date and time</th>
+    <th class="col-md-4">End date and time</th>
+  </tr>
+  </thead>
+  <tbody *ngFor="let data of schedulesData">
+  <td class="col-md-4">{{data.startTime}}</td>
+  <td class="col-md-4">{{data.endTime}}</td>
+  </tbody>
+</table>
+</div>
+<br>
+
+<div class="col-md-12" style="margin: 20px">
+  <button class="btn-primary ion-android-create" [value]="action" (click)="newSchedule(action)"> New Schedule </button>
+</div>
+<br>
+
+<div *ngIf="newScheduleValue" style="margin-left: 20px">
+<p-dropdown [options]="actions"  [(ngModel)]="scheduleData.selectedAction" placeholder="Action" (onChange)="getAction(scheduleData.selectedAction)"></p-dropdown>
+</div>
+
+<div *ngIf="scheduleData.selectedAction === 'start' || scheduleData.selectedAction === 'stop'">
+  <div *ngFor="let type of scheduleTypes" style="display: inline-block; margin-left: 20px">
+    <label>
+      <input type="radio" name="scheduleType" [(ngModel)]= "scheduleData.selectedScheduleType" [value]="type"  inputId="opt1" (click)="getScheduleTypes(type)">
+      {{type}}
+    </label>
+  </div>
+</div>
+
+
+
+<div *ngIf="scheduleData.selectedScheduleType === 'Custom Schedule' && scheduleData.selectedAction === 'start'">
+  <!--<p-dropdown [options]="timeZones"  [(ngModel)]="timeZone" placeholder="Time zone"></p-dropdown>-->
+  <!--<div  *ngFor="let each of allRows">-->
+    <div>
+      <div class="col-md-3">
+        <div>
+          <span>Start date</span>
+        </div>
+        <p-calendar  [(ngModel)]="scheduleData.startDate"  [showIcon]="true" placeholder="MM/DD/YYYY" [minDate]="startDateValue"></p-calendar>
+      </div>
+      <div class="col-md-3">
+        <div>
+          <span>Start Time</span>
+        </div>
+        <p-calendar  [(ngModel)]="scheduleData.startTime" [timeOnly]="true" hourFormat="12" placeholder="HH:MM AM"></p-calendar>
+      </div>
+      <!--<div class="col-md-3">-->
+        <!--<div>-->
+          <!--<span>End date</span>-->
+        <!--</div>-->
+        <!--<p-calendar #fromCalander [disabled]="scheduleData.startDate == ''" [(ngModel)]="scheduleData.endDate" [monthNavigator]="true" [yearNavigator]="true" yearRange="2000:2030" [showIcon]="true" placeholder="MM/DD/YYYY" [minDate]="scheduleData.startDate" (onFocus)="updateCalendar(fromCalander)"></p-calendar>-->
+      <!--</div>-->
+      <!--<div class="col-md-3">-->
+        <!--<div>-->
+          <!--<span>End Time</span>-->
+        <!--</div>-->
+        <!--<p-calendar #fromCalander [disabled]="scheduleData.startTime == ''" [(ngModel)]="scheduleData.endTime" [timeOnly]="true" hourFormat="12" placeholder="HH:MM AM" [defaultDate]="endMinTime" [minDate]="endMinTime" (onFocus)="getEndDate(fromCalander)"></p-calendar>-->
+      <!--</div>-->
+    </div>
+    <!--<div>-->
+      <!--<button (click)="removeSelectedRow(each)"> Remove </button>-->
+    <!--</div>-->
+  <!--</div>-->
+
+  <br>
+
+  <!--<button (click)="addRow()"> Add </button>-->
+  <div class="col-md-12">
+    <span style="color: red"> {{errorFields}} </span>
+  </div>
+  <br>
+  <div class="col-md-12" style="margin: 20px">
+    <button class="btn-danger" (click)="cancelForm()"> Cancel </button>
+    <button class="btn-success" (click)="submitForm(scheduleData)"> Submit </button>
+  </div>
+
+</div>
+
+<div *ngIf="scheduleData.selectedScheduleType === 'Custom Schedule' && scheduleData.selectedAction === 'stop'">
+  <!--<p-dropdown [options]="timeZones"  [(ngModel)]="timeZone" placeholder="Time zone"></p-dropdown>-->
+  <!--<div  *ngFor="let each of allRows">-->
+  <div>
+    <div class="col-md-3">
+      <div>
+        <span>End date</span>
+      </div>
+      <p-calendar   [(ngModel)]="scheduleData.endDate" [monthNavigator]="true" [yearNavigator]="true" yearRange="2000:2030" [showIcon]="true" placeholder="MM/DD/YYYY" [minDate]="endDateValue" ></p-calendar>
+    </div>
+    <div class="col-md-3">
+      <div>
+        <span>End Time</span>
+      </div>
+      <p-calendar   [(ngModel)]="scheduleData.endTime" [timeOnly]="true" hourFormat="12" placeholder="HH:MM AM"></p-calendar>
+    </div>
+  </div>
+  <!--<div>-->
+  <!--<button (click)="removeSelectedRow(each)"> Remove </button>-->
+  <!--</div>-->
+  <!--</div>-->
+
+  <br>
+  <div class="col-md-12">
+    <span style="color: red"> {{errorFields}} </span>
+  </div>
+  <br>
+  <!--<button (click)="addRow()"> Add </button>-->
+  <div class="col-md-12" style="margin: 20px">
+    <button class="btn-danger" (click)="cancelForm()"> Cancel </button>
+    <button class="btn-success" (click)="submitForm(scheduleData)"> Submit </button>
+  </div>
+
+</div>
+
+<div *ngIf="(scheduleData.selectedScheduleType == 'Repeat Schedule' && scheduleData.selectedAction == 'start')">
+
+  <!--<div  *ngFor="let each of allRows">-->
+    <div class="row">
+      <div class="col-md-3">
+        <span>Repeat every</span>
+        <input type="number" [(ngModel)]="scheduleData.repeatNumber">
+      </div>
+
+      <p-dropdown [options]="repeatType"  [(ngModel)]="scheduleData.repeatType" placeholder="Repeat type"></p-dropdown>
+    </div>
+    <div>
+      <span *ngIf="scheduleData.repeatNumber >= 99" style="color: red"> Entered repeat number should be in 2 digits </span>
+    </div>
+
+
+  <div *ngIf="scheduleData.repeatType === 'week'" style="margin-left: 10px">
+      <div>Repeat on:</div>
+      <div *ngFor="let day of scheduleDays; let i of index" style="display: inline-block; margin-right: 10px">
+        <label>
+        <input class="row" type="checkbox" [(ngModel)]= "scheduleData.repeatDays[day]" [value]="day" inputId="day">
+        {{day}}
+        </label>
+      </div>
+    </div>
+    <div class="col-md-9" style="margin: 10px">
+      <div class="col-md-3">
+        <div>
+          <span>Start date</span>
+        </div>
+        <p-calendar  [(ngModel)]="scheduleData.startDate" required="true" [showIcon]="true" placeholder="MM/DD/YYYY" [minDate]="startDateValue"></p-calendar>
+      </div>
+      <div class="col-md-3">
+        <div>
+          <span>Start Time</span>
+        </div>
+        <p-calendar  [(ngModel)]="scheduleData.startTime" required="true" [timeOnly]="true" [minDate]="startTimeValue" hourFormat="12" placeholder="HH:MM AM"></p-calendar>
+      </div>
+    </div>
+  <!--<div>-->
+  <!--<button (click)="removeSelectedRow(each)"> Remove </button>-->
+  <!--</div>-->
+  <!--</div>-->
+
+  <br>
+
+  <!--<button (click)="addRow()"> Add </button>-->
+  <div class="col-md-12">
+    <span style="color: red"> {{errorFields}} </span>
+  </div>
+  <br>
+  <div class="col-md-12" style="margin: 20px">
+    <button class="btn-danger" (click)="cancelForm()"> Cancel </button>
+    <button class="btn-success" (click)="submitForm(scheduleData)"> Submit </button>
+  </div>
+</div>
+
+<div *ngIf="(scheduleData.selectedScheduleType == 'Repeat Schedule' && scheduleData.selectedAction == 'stop')">
+
+  <div class="row">
+    <div class="col-md-3">
+      <span>Repeat every</span>
+      <input type="text" [(ngModel)]="scheduleData.repeatNumber">
+    </div>
+    <p-dropdown [options]="repeatType"  [(ngModel)]="scheduleData.repeatType" placeholder="Repeat type"></p-dropdown>
+  </div>
+  <div>
+    <span *ngIf="scheduleData.repeatNumber >= 99" style="color: red"> Entered repeat number should be in 2 digits </span>
+  </div>
+
+  <div *ngIf="scheduleData.repeatType === 'week'" style="margin-left: 10px">
+    <div>Repeat on:</div>
+    <div *ngFor="let day of scheduleDays; let i of index" style="display: inline-block; margin-right: 10px">
+      <label>
+        <input class="row" type="checkbox" [(ngModel)]= "scheduleData.repeatDays[day]" [value]="day" inputId="day">
+        {{day}}
+      </label>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div>Repeat end type:</div>
+    <div *ngFor="let endType of scheduleEndTypes" class="ui-g-3" style="display: inline-block">
+      <label>
+        <input class="row" type="radio" name ="endType" [(ngModel)]= "scheduleData.repeatEndType" [value]="endType">
+        {{endType}}
+      </label>
+    </div>
+  </div>
+  <div class="col-md-9" style="margin: 10px" *ngIf="scheduleData.repeatEndType === 'On'">
+    <div class="col-md-3">
+      <div>
+        <span>End date</span>
+      </div>
+      <p-calendar  [(ngModel)]="scheduleData.endDate"  [showIcon]="true" placeholder="MM/DD/YYYY" [minDate]="endDateValue"></p-calendar>
+    </div>
+    <div class="col-md-3">
+      <div>
+        <span>End Time</span>
+      </div>
+      <p-calendar  [(ngModel)]="scheduleData.endTime" [timeOnly]="true" hourFormat="12" placeholder="HH:MM AM"></p-calendar>
+    </div>
+  </div>
+  <div class="col-md-12" *ngIf="scheduleData.repeatEndType === 'After'">
+    <input type="number" class="occurences" [(ngModel)]="scheduleData.repeatOccurrences" placeholder="10 Occurrences">
+  </div>
+  <div>
+    <span *ngIf="scheduleData.repeatNumber >= 99" style="color: red"> Entered occurrences should be less than 100 </span>
+  </div>
+  <!--<div>-->
+  <!--<button (click)="removeSelectedRow(each)"> Remove </button>-->
+  <!--</div>-->
+  <!--</div>-->
+
+  <br>
+
+  <!--<button (click)="addRow()"> Add </button>-->
+  <div class="col-md-12">
+    <span style="color: red"> {{errorFields}} </span>
+  </div>
+  <br>
+  <div class="col-md-12" style="margin: 20px">
+    <button class="btn-danger" (click)="cancelForm()"> Cancel </button>
+    <button class="btn-success" (click)="submitForm(scheduleData)"> Submit </button>
+  </div>
+</div>
+
